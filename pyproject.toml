@@ -5,8 +5,15 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "celery>=5.6.2",
+    "deepl>=1.28.0",
     "fastapi>=0.131.0",
+    "numpy>=2.4.2",
     "paddleocr>=3.4.0",
     "paddlepaddle>=3.3.0",
+    "pydantic-settings>=2.13.1",
+    "pythainlp>=5.2.0",
+    "redis>=7.2.0",
+    "simple-lama-inpainting>=0.1.0",
     "uvicorn>=0.41.0",
 ]
