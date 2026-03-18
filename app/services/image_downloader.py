@@ -55,4 +55,12 @@ class ImageDownloader:
         if img_array is None:
             raise InvalidFileTypeError("Failed to decode image. File may be corrupted.")
 
+        max_w = self.settings.MAX_PROCESS_WIDTH
+        h, w = img_array.shape[:2]
+        if max_w and w > max_w:
+            scale = max_w / w
+            img_array = cv2.resize(
+                img_array, (max_w, int(h * scale)), interpolation=cv2.INTER_AREA
+            )
+
         return img_array

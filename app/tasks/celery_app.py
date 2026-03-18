@@ -18,6 +18,7 @@ celery_app.conf.update(
     worker_concurrency=1,
     task_acks_late=True,
     task_reject_on_worker_lost=True,
+    worker_pool="solo",
 )
 
 celery_app.conf.include = ["app.tasks.translate_task"]

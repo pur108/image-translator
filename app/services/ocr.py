@@ -17,6 +17,10 @@ class OCRService:
     def __init__(self):
         self._models: dict[str, PaddleOCR] = {}
 
+    def warmup(self, langs: list[str] | None = None) -> None:
+        for lang in (langs or ["th", "en"]):
+            self._get_model(lang)
+
     def _get_model(self, lang: str) -> PaddleOCR:
         paddle_lang = "en" if lang == "en" else "th"
         if paddle_lang not in self._models:

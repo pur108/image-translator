@@ -28,14 +28,11 @@ def _load_lama_cpu() -> SimpleLama:
 
 
 class InpaintService:
-    def __init__(self):
+    def __init__(self, fast_inpaint: bool = True):
+        self.fast_inpaint = fast_inpaint
         self._lama: SimpleLama | None = None
-
-    @property
-    def lama(self) -> SimpleLama:
-        if self._lama is None:
+        if not fast_inpaint:
             self._lama = _load_lama_cpu()
-        return self._lama
 
     def create_mask(
         self,
@@ -60,13 +57,16 @@ class InpaintService:
 
     def inpaint(self, image: np.ndarray, mask: np.ndarray) -> np.ndarray:
         try:
+            if self.fast_inpaint:
+                return cv2.inpaint(image, mask, 3, cv2.INPAINT_TELEA)
+
             # Convert BGR (OpenCV) to RGB (PIL)
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             pil_image = Image.fromarray(image_rgb)
             pil_mask = Image.fromarray(mask)
 
             # Run LaMa inpainting
-            result_pil = self.lama(pil_image, pil_mask)
+            result_pil = self._lama(pil_image, pil_mask)
 
             # Convert back to BGR numpy
             result_rgb = np.array(result_pil)

@@ -7,7 +7,7 @@ import httpx
 import redis
 from celery import Task
 
-from app.config import Settings, settings
+from app.config import settings
 from app.pipeline.processor import TranslationPipeline
 from app.tasks.celery_app import celery_app
 
@@ -26,7 +26,7 @@ class TranslateTask(Task):
     @property
     def pipeline(self) -> TranslationPipeline:
         if self._pipeline is None:
-            self._pipeline = TranslationPipeline(Settings())
+            self._pipeline = TranslationPipeline(settings)
         return self._pipeline
 
 
@@ -61,11 +61,12 @@ def translate_image(
 
         result_bytes = self.pipeline.process(image_url, source_lang, target_lang)
 
-        result_key = f"result:{job_id}"
         pipe = r.pipeline()
-        pipe.set(result_key, result_bytes)
-        pipe.expire(result_key, settings.RESULT_TTL_SECONDS)
-        pipe.hset(job_key, mapping={"status": "done", "content_type": "image/png"})
+        pipe.hset(job_key, mapping={
+            "status": "done",
+            "content_type": "image/png",
+            "result": result_bytes,
+        })
         pipe.expire(job_key, settings.RESULT_TTL_SECONDS)
         pipe.execute()
 
