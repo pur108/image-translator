@@ -17,7 +17,7 @@ class TextRenderer:
         self._load_font_paths()
 
     def _load_font_paths(self):
-        thai_font = os.path.join(self.font_dir, "NotoSansThai-Regular.ttf")
+        thai_font = os.path.join(self.font_dir, "TF Phethai.ttf")
         en_font = os.path.join(self.font_dir, "NotoSans-Regular.ttf")
 
         if os.path.exists(thai_font):
