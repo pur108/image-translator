@@ -32,8 +32,10 @@ def test_download(settings: Settings, image_url: str, out_dir: str) -> np.ndarra
     print("[1/6] Downloading image...")
     downloader = ImageDownloader(settings)
     img = downloader.download(image_url)
+    h, w = img.shape[:2]
     cv2.imwrite(os.path.join(out_dir, "1_downloaded.png"), img)
     print(f"      Saved 1_downloaded.png  (shape: {img.shape})")
+    print(f"      Downscaled to {w}x{h} (max dimension: {settings.MAX_PROCESS_DIMENSION})")
     return img
 
 
@@ -104,11 +106,14 @@ def test_grouping(image: np.ndarray, regions, out_dir: str):
 
 
 # ── Layer 4: Inpainting ──
-def test_inpaint(image: np.ndarray, regions, out_dir: str) -> np.ndarray:
+def test_inpaint(
+    settings: Settings, image: np.ndarray, regions, out_dir: str
+) -> np.ndarray:
     from app.services.inpaint import InpaintService
 
-    print("[4/6] Inpainting (removing text)...")
-    inpainter = InpaintService()
+    mode = "cv2 TELEA" if settings.FAST_INPAINT else "LaMa"
+    print(f"[4/6] Inpainting (removing text) [{mode}]...")
+    inpainter = InpaintService(fast_inpaint=settings.FAST_INPAINT)
     mask = inpainter.create_mask(image.shape, regions)
     cv2.imwrite(os.path.join(out_dir, "4_mask.png"), mask)
     inpainted = inpainter.inpaint(image, mask)
@@ -191,7 +196,7 @@ def main():
         return
 
     # Layer 4
-    inpainted = test_inpaint(image, grouped, out_dir)
+    inpainted = test_inpaint(settings, image, grouped, out_dir)
 
     # Layer 5
     translated = test_translate(
