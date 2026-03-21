@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     SUPABASE_STORAGE_BUCKET: str = "comics"
 
     MAX_IMAGE_SIZE_BYTES: int = 10 * 1024 * 1024  # 10MB
-    MAX_PROCESS_WIDTH: int = 1280
+    MAX_PROCESS_DIMENSION: int = 1280
     FAST_INPAINT: bool = True
     RESULT_TTL_SECONDS: int = 3600  # 1 hour
     FONT_DIR: str = "./fonts"
