@@ -66,6 +66,7 @@ class InpaintService:
             pil_mask = Image.fromarray(mask)
 
             # Run LaMa inpainting
+            assert self._lama is not None
             result_pil = self._lama(pil_image, pil_mask)
 
             # Convert back to BGR numpy
